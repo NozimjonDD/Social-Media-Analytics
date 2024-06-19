@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - BASE_URL=https://api.tgstat.ru
+      - TOKEN=d6776bcf48dd9facd8ab370dc0dcd245
+      - JWT_SIGNING_KEY=HELLO
+      - ADDRESS=0.0.0.0:8080
+      - DATABASE_URL=postgres://tgstat:tgstat@db:5432/tgstat?sslmode=disable
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_DB=tgstat
+      - POSTGRES_USER=tgstat
+      - POSTGRES_PASSWORD=tgstat
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/www/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migrator:
+    image: migrate/migrate
+    command: [ "-path", "/migrations", "-database",  "postgres://tgstat:tgstat@db:5432/tgstat?sslmode=disable", "up" ]
+    volumes:
+      - ./migrations:/migrations
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+
+networks:
+  app-network:

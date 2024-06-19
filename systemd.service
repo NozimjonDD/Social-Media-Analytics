@@ -1,0 +1,16 @@
+[Unit]
+Description=tgstat api
+After=network-online.target
+
+[Service]
+Environment=address=:8080
+Environment=BASE_URL=https://api.tgstat.ru
+Environment=TOKEN=7a3a1b117ce9f25a5b1a1ebfa2193543
+Environment=JWT_SIGNING_KEY=aaa123z!@#
+Environment=DATABASE_URL=postgres://tgstat_user:tgstat_user@localhost:5432/tgstat?sslmode=disable
+WorkingDirectory=/var/www/tgstat/api
+ExecStart=/var/www/tgstat/api/tgstat
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
