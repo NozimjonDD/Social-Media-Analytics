@@ -3,7 +3,7 @@ info:
   version: "0.1"
   title: "TGSTAT"
 servers:
-  - url: https://social.proreforms.uz/api
+  - url: https://socials.proreforms.uz/api
 
 paths:
   /auth/sign-in:
